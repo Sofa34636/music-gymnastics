@@ -1,0 +1,132 @@
+.inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 80vh;
+  padding: 1rem 0.5rem;
+}
+.section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 10px 1px rgba(0, 0, 0, 0.25);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  flex-grow: 1;
+  padding-bottom: 1rem;
+  gap: 20px;
+  padding-top: 20px;
+
+  &__bloc {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__button {
+    display: flex;
+    justify-content: space-between;
+
+    &_item {
+      border-radius: 30px;
+      width: 210px;
+      padding: 10px;
+      border: none;
+    }
+    &_blue {
+      background-color: #1a016c;
+      color: rgba(255, 255, 255, 0.8) !important;
+    }
+    &_gray {
+      background-color: #d9d9d9;
+    }
+    &_register {
+      border-radius: 30px;
+      width: 325px;
+      padding: 10px;
+      border: none;
+      margin: 0 auto;
+    }
+  }
+  &__country {
+    display: flex;
+    gap: 45px;
+    margin: 10px 0 15px 0;
+  }
+  &__input {
+    width: 213px !important;
+  }
+  input {
+    border-radius: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    width: 470px;
+    height: 50px;
+    background: #d9d9d9;
+    border: none;
+    color: rgba(0, 0, 0, 0.5);
+  }
+  p {
+    max-width: 470px;
+  }
+}
+
+.instructions {
+  font-size: 0.75rem;
+  border-radius: 0.5rem;
+  background: #000;
+  color: #fff;
+  padding: 0.25rem;
+  position: relative;
+  bottom: -10px;
+}
+
+.instructions > svg {
+  margin-right: 0.25rem;
+}
+
+.offscreen {
+  position: absolute;
+  left: -9999px;
+}
+
+.hide {
+  display: none;
+}
+
+.valid {
+  color: limegreen;
+  margin-left: 0.25rem;
+}
+
+.invalid {
+  color: red;
+  margin-left: 0.25rem;
+}
+
+.errmsg {
+  background-color: lightpink;
+  color: firebrick;
+  font-weight: bold;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.line {
+  display: inline-block;
+}
+
+.flexGrow {
+  flex-grow: 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+}
