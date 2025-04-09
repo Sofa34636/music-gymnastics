@@ -5,8 +5,10 @@ import personal from '../Images/icon/personal.svg';
 import cart from '../Images/icon/cart.svg';
 import translate from '../Images/icon/translate.svg';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 
 export function Header() {
+  const { loginAsUser, loginAsAdmin, logout, auth } = useAuth();
   return (
     <header>
       <div class='header'>
@@ -22,7 +24,7 @@ export function Header() {
                     <img class='header__logo-text' src={LogoText} alt='' />
                   </Link>
                 </div>
-                <nav class='header__menu'>
+                {/* <nav class='header__menu'>
                   <ul class='header__list'>
                     <li class='header__list-item'>
                       <a href='' class='header__list-link'>
@@ -45,7 +47,14 @@ export function Header() {
                       </a>
                     </li>
                   </ul>
-                </nav>
+                </nav> */}
+                {/* Добавляем кнопки для тестирования */}
+                <div>
+                  <span>Роль: {auth.roles.join(', ') || 'Нет'}</span>
+                  <button onClick={loginAsUser}>User</button>
+                  <button onClick={loginAsAdmin}>Admin</button>
+                  <button onClick={logout}>Выйти</button>
+                </div>
                 <div class='header__icon'>
                   <img src={translate} alt='' />
                   <Link to='/cart'>

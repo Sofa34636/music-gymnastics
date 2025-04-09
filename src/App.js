@@ -11,26 +11,13 @@ import { Layout } from './component/Page/Layout';
 import { Cart } from './component/Main/Cart/Cart';
 import { AddTrack } from './component/AdminPanel/AddTrack/AddTrack';
 import { TrackManagement } from './component/AdminPanel/TrackManagement/TrackManagement';
-import { useAuth } from './hooks/useAuth';
+
 import { AuthProvider } from './context/AuthProvider';
 
 const ROLES = {
   User: 2001,
   Admin: 5150,
 };
-
-// Компонент для тестирования ролей
-function DebugAuth() {
-  const { loginAsUser, loginAsAdmin, logout, auth } = useAuth();
-  return (
-    <div>
-      <p>Текущая роль: {auth.roles.join(', ') || 'Нет'}</p>
-      <button onClick={loginAsUser}>Войти как User</button>
-      <button onClick={loginAsAdmin}>Войти как Admin</button>
-      <button onClick={logout}>Выйти</button>
-    </div>
-  );
-}
 
 function App() {
   return (
@@ -42,7 +29,6 @@ function App() {
             <Route index element={<Main />} />
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Register />} />
-            <Route path='debug' element={<DebugAuth />} />
 
             {/* we want to protect these routes */}
             <Route element={<RequireAuth allowedRoles={[ROLES.User]} />}>

@@ -19,6 +19,13 @@
   }
 }
 
+.main {
+  &__column {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
 .header {
   &__gradient {
     background: linear-gradient(to right, #831359, #1a016c);
@@ -114,23 +121,53 @@
 
 .swiper-button-prev,
 .swiper-button-next {
-  width: 100px; // Фиксированная ширина
-  height: 100px; // Растягиваем на всю высоту .swiper
-  background-color: rgba(0, 0, 0, 0.5); // Полупрозрачный фон
-  color: #ffffff !important;
+  // background-color: rgba(0, 0, 0, 0.5); // Полупрозрачный фон
+  color: #000000 !important;
 
   &:hover {
-    background-color: rgba(0, 0, 0, 0.8);
+    // background-color: rgba(0, 0, 0, 0.8);
+    // font-size: 30px;
   }
 
   &::after {
-    font-size: 20px; // Размер стрелки
+    // font-size: 20px; // Размер стрелки
   }
 }
 
+.search {
+  &__inner {
+    position: relative;
+    margin-bottom: 30px;
+  }
+  &__input {
+    background-color: #d9d9d9;
+    display: flex;
+    border: 1px solid rgba(63, 59, 59, 0.25);
+    border-radius: 50px;
+    padding: 10px 60px;
+    width: 100%;
+    &:focus {
+      border: 1px solid rgba(63, 59, 59, 0.3);
+    }
+  }
+  &__searchIcon {
+    position: absolute;
+    top: 15%;
+    padding-left: 10px;
+  }
+  &__clearIcon {
+    position: absolute;
+    top: 21%;
+    right: 0;
+    padding-right: 60px;
+    cursor: pointer;
+    opacity: 0.5;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
 .track {
-  display: flex;
-  justify-content: space-between;
   &__inner {
   }
   &__bloc {
