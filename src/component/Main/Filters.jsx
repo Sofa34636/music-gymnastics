@@ -1,127 +1,59 @@
 import React from 'react';
 import ReactSlider from 'react-slider';
+import {
+  setPriceRange,
+  toggleGenre,
+  toggleTempo,
+  toggleVoice,
+  toggleDuration,
+  toggleLanguage,
+  setMinPrice,
+  setMaxPrice,
+  updateFromTracks,
+  setFilters, // Добавляем для сброса
+} from '../../redux/slices/filterSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 // Компонент Filters отвечает за отображение и управление фильтрами для треков
-export function Filters({ tracks, filters, onFilterChange }) {
-  // Извлекаем цены из треков для диапазона цен, если треков нет — используем [0]
-  const prices = tracks.length > 0 ? tracks.map((track) => parseInt(track.Price)) : [0];
-  // Минимальная цена: минимальное значение из prices или 0, если треков нет
-  const minPrice = tracks.length > 0 ? Math.min(...prices) : 0;
-  // Максимальная цена: максимальное значение из prices или 1000, если треков нет
-  const maxPrice = tracks.length > 0 ? Math.max(...prices) : 1000;
+export function Filters({ tracks }) {
+  const dispatch = useDispatch();
+  const {
+    priceRange,
+    genres,
+    tempos,
+    voices,
+    durations,
+    languages,
+    minPrice,
+    maxPrice,
+    uniqueGenres,
+    uniqueTempos,
+    uniqueVoices,
+    uniqueDurations,
+    uniqueLanguages,
+  } = useSelector((state) => state.filters);
 
-  // Уникальные значения для фильтров: собираем только из доступных треков, иначе пустой массив
-  const uniqueGenres = tracks.length > 0 ? [...new Set(tracks.map((track) => track.Genre))] : [];
-  const uniqueTempos = tracks.length > 0 ? [...new Set(tracks.map((track) => track.Tempo))] : [];
-  const uniqueVoices = tracks.length > 0 ? [...new Set(tracks.map((track) => track.Voice))] : [];
-  const uniqueDurations =
-    tracks.length > 0 ? [...new Set(tracks.map((track) => track.Duration))] : [];
-  const uniqueLanguages =
-    tracks.length > 0 ? [...new Set(tracks.map((track) => track.Language))] : [];
+  // Обновляем вычисляемые значения при изменении tracks
+  React.useEffect(() => {
+    dispatch(updateFromTracks(tracks));
+  }, [tracks, dispatch]);
 
-  // Функция для разделения списка на две колонки (для жанров и языков, до 6 элементов в одной колонке)
-  const splitIntoColumns = (items) => {
-    if (items.length <= 6) return [items, []]; // Если <= 6, вторая колонка пустая
-    const mid = Math.ceil(items.length / 2); // Делим пополам, округляя вверх
-    return [items.slice(0, mid), items.slice(mid)]; // Возвращаем две части
+  // Функции для разделения на колонки
+  const splitIntoColumns = (items, maxPerColumn = 6) => {
+    if (items.length <= maxPerColumn) return [items, []];
+    const mid = Math.ceil(items.length / 2);
+    return [items.slice(0, mid), items.slice(mid)];
   };
 
-  // Функция для разделения списка на две колонки (для длительности, до 3 элементов в одной колонке)
-  const splitIntoColumns2 = (items) => {
-    if (items.length <= 3) return [items, []]; // Если <= 3, вторая колонка пустая
-    const mid = Math.ceil(items.length / 2); // Делим пополам, округляя вверх
-    return [items.slice(0, mid), items.slice(mid)]; // Возвращаем две части
-  };
-
-  // Разделяем списки на колонки для отображения
   const [genreCol1, genreCol2] = splitIntoColumns(uniqueGenres);
-  const [durationCol1, durationCol2] = splitIntoColumns2(uniqueDurations);
+  const [durationCol1, durationCol2] = splitIntoColumns(uniqueDurations, 3); // 3 для длительности
   const [languageCol1, languageCol2] = splitIntoColumns(uniqueLanguages);
 
-  // Обработчик изменения слайдера цены: обновляет priceRange, если разница >= 100
-  const handlePriceChange = (value) => {
-    if (value[1] - value[0] >= 100) {
-      onFilterChange({ ...filters, priceRange: value }); // Обновляем только priceRange
-    }
-  };
-
-  // Обработчик ввода минимальной цены вручную
-  const handleMinPriceInput = (e) => {
-    const value = parseInt(e.target.value) || minPrice; // Значение или minPrice, если ввод некорректен
-    if (value >= minPrice && value <= filters.priceRange[1] - 100) {
-      onFilterChange({ ...filters, priceRange: [value, filters.priceRange[1]] }); // Устанавливаем новое минимальное значение
-    } else if (value < minPrice) {
-      onFilterChange({ ...filters, priceRange: [minPrice, filters.priceRange[1]] }); // Ограничиваем снизу
-    } else if (value > filters.priceRange[1] - 100) {
-      onFilterChange({
-        ...filters,
-        priceRange: [filters.priceRange[1] - 100, filters.priceRange[1]], // Устанавливаем минимально допустимую разницу
-      });
-    }
-  };
-
-  // Обработчик ввода максимальной цены вручную
-  const handleMaxPriceInput = (e) => {
-    const value = parseInt(e.target.value) || maxPrice; // Значение или maxPrice, если ввод некорректен
-    if (value <= maxPrice && value >= filters.priceRange[0] + 100) {
-      onFilterChange({ ...filters, priceRange: [filters.priceRange[0], value] }); // Устанавливаем новое максимальное значение
-    } else if (value > maxPrice) {
-      onFilterChange({ ...filters, priceRange: [filters.priceRange[0], maxPrice] }); // Ограничиваем сверху
-    } else if (value < filters.priceRange[0] + 100) {
-      onFilterChange({
-        ...filters,
-        priceRange: [filters.priceRange[0], filters.priceRange[0] + 100], // Устанавливаем минимально допустимую разницу
-      });
-    }
-  };
-
-  // Обработчик изменения жанра: добавляет или убирает жанр из списка
-  const handleGenreChange = (genre) => {
-    const newGenres = filters.genres.includes(genre)
-      ? filters.genres.filter((g) => g !== genre) // Убираем, если уже выбран
-      : [...filters.genres, genre]; // Добавляем, если не выбран
-    onFilterChange({ ...filters, genres: newGenres });
-  };
-
-  // Обработчик изменения темпа: добавляет или убирает темп из списка
-  const handleTempoChange = (tempo) => {
-    const newTempos = filters.tempos.includes(tempo)
-      ? filters.tempos.filter((t) => t !== tempo)
-      : [...filters.tempos, tempo];
-    onFilterChange({ ...filters, tempos: newTempos });
-  };
-
-  // Обработчик изменения голоса: добавляет или убирает голос из списка
-  const handleVoiceChange = (voice) => {
-    const newVoices = filters.voices.includes(voice)
-      ? filters.voices.filter((v) => v !== voice)
-      : [...filters.voices, voice];
-    onFilterChange({ ...filters, voices: newVoices });
-  };
-
-  // Обработчик изменения длительности: добавляет или убирает длительность из списка
-  const handleDurationChange = (duration) => {
-    const newDurations = filters.durations.includes(duration)
-      ? filters.durations.filter((d) => d !== duration)
-      : [...filters.durations, duration];
-    onFilterChange({ ...filters, durations: newDurations });
-  };
-
-  // Обработчик изменения языка: добавляет или убирает язык из списка
-  const handleLanguageChange = (language) => {
-    const newLanguages = filters.languages.includes(language)
-      ? filters.languages.filter((l) => l !== language)
-      : [...filters.languages, language];
-    onFilterChange({ ...filters, languages: newLanguages });
-  };
-
-  // Рендеринг интерфейса фильтров
   return (
     <section>
       <div className='Filters'>
         <div className='Filters__inner'>
           <h2>Фильтры</h2>
-
           <div className='Filters__genre'>
             <div className='Filters__text Filters__genre-text'>Жанр:</div>
             <div className='Filters__columns'>
@@ -135,8 +67,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                           id={`genre-${i}`}
                           name='genre'
                           className='Filters__item'
-                          checked={filters.genres.includes(genre)} // Отмечен, если жанр выбран
-                          onChange={() => handleGenreChange(genre)}
+                          checked={genres.includes(genre)}
+                          onChange={() => dispatch(toggleGenre(genre))}
                         />
                         <span className='Filters__box'></span>
                         {genre}
@@ -156,8 +88,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                         id={`genre-${i + genreCol1.length}`}
                         name='genre'
                         className='Filters__item'
-                        checked={filters.genres.includes(genre)}
-                        onChange={() => handleGenreChange(genre)}
+                        checked={genres.includes(genre)}
+                        onChange={() => dispatch(toggleGenre(genre))}
                       />
                       <span className='Filters__box'></span>
                       {genre}
@@ -181,8 +113,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                             id={`tempo-${i}`}
                             name='pace'
                             className='Filters__item'
-                            checked={filters.tempos.includes(tempo)}
-                            onChange={() => handleTempoChange(tempo)}
+                            checked={tempos.includes(tempo)}
+                            onChange={() => dispatch(toggleTempo(tempo))}
                           />
                           <span className='Filters__box'></span>
                           {tempo}
@@ -208,8 +140,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                             id={`voice-${i}`}
                             name='voice'
                             className='Filters__item'
-                            checked={filters.voices.includes(voice)}
-                            onChange={() => handleVoiceChange(voice)}
+                            checked={voices.includes(voice)}
+                            onChange={() => dispatch(toggleVoice(voice))}
                           />
                           <span className='Filters__box'></span>
                           {voice}
@@ -231,8 +163,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                 <input
                   type='number'
                   className='input-min'
-                  value={filters.priceRange[0]} // Текущее минимальное значение
-                  onChange={handleMinPriceInput}
+                  value={priceRange[0]}
+                  onChange={(e) => dispatch(setMinPrice(e.target.value))}
                 />
               </div>
               <div className='separator'>-</div>
@@ -241,8 +173,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                 <input
                   type='number'
                   className='input-max'
-                  value={filters.priceRange[1]} // Текущее максимальное значение
-                  onChange={handleMaxPriceInput}
+                  value={priceRange[1]}
+                  onChange={(e) => dispatch(setMaxPrice(e.target.value))}
                 />
               </div>
             </div>
@@ -250,13 +182,13 @@ export function Filters({ tracks, filters, onFilterChange }) {
               className='custom-slider'
               min={minPrice}
               max={maxPrice}
-              step={10} // Шаг изменения цены
-              value={filters.priceRange} // Текущий диапазон
-              onChange={handlePriceChange}
-              minDistance={100} // Минимальная разница между min и max
-              pearling // Позволяет двигать оба ползунка
-              trackClassName='custom-track' // Стили для трека
-              thumbClassName='custom-thumb' // Стили для ползунков
+              step={10}
+              value={priceRange}
+              onChange={(value) => dispatch(setPriceRange(value))}
+              minDistance={100}
+              pearling
+              trackClassName='custom-track'
+              thumbClassName='custom-thumb'
             />
           </div>
           <div className='Filters__duration'>
@@ -272,8 +204,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                           id={`duration-${i}`}
                           name='duration'
                           className='Filters__item'
-                          checked={filters.durations.includes(duration)}
-                          onChange={() => handleDurationChange(duration)}
+                          checked={durations.includes(duration)}
+                          onChange={() => dispatch(toggleDuration(duration))}
                         />
                         <span className='Filters__box'></span>
                         {duration}
@@ -296,8 +228,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                         id={`duration-${i + durationCol1.length}`}
                         name='duration'
                         className='Filters__item'
-                        checked={filters.durations.includes(duration)}
-                        onChange={() => handleDurationChange(duration)}
+                        checked={durations.includes(duration)}
+                        onChange={() => dispatch(toggleDuration(duration))}
                       />
                       <span className='Filters__box'></span>
                       {duration}
@@ -320,8 +252,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                           id={`language-${i}`}
                           name='language'
                           className='Filters__item'
-                          checked={filters.languages.includes(language)}
-                          onChange={() => handleLanguageChange(language)}
+                          checked={languages.includes(language)}
+                          onChange={() => dispatch(toggleLanguage(language))}
                         />
                         <span className='Filters__box'></span>
                         {language}
@@ -344,8 +276,8 @@ export function Filters({ tracks, filters, onFilterChange }) {
                         id={`language-${i + languageCol1.length}`}
                         name='language'
                         className='Filters__item'
-                        checked={filters.languages.includes(language)}
-                        onChange={() => handleLanguageChange(language)}
+                        checked={languages.includes(language)}
+                        onChange={() => dispatch(toggleLanguage(language))}
                       />
                       <span className='Filters__box'></span>
                       {language}
@@ -356,16 +288,18 @@ export function Filters({ tracks, filters, onFilterChange }) {
             </div>
           </div>
           <button
-            className='Button__red'
+            className='Button Button__red'
             onClick={() => {
-              onFilterChange({
-                priceRange: [minPrice, maxPrice], // Сбрасываем до начального диапазона
-                genres: [],
-                tempos: [],
-                voices: [],
-                durations: [],
-                languages: [],
-              });
+              dispatch(
+                setFilters({
+                  priceRange: [minPrice, maxPrice],
+                  genres: [],
+                  tempos: [],
+                  voices: [],
+                  durations: [],
+                  languages: [],
+                }),
+              );
             }}
           >
             Сбросить фильтры

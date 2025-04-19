@@ -6,9 +6,11 @@ import cart from '../Images/icon/cart.svg';
 import translate from '../Images/icon/translate.svg';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useSelector } from 'react-redux';
 
 export function Header() {
   const { loginAsUser, loginAsAdmin, logout, auth } = useAuth();
+  const { items, totaPrise } = useSelector((state) => state.cart);
   return (
     <header>
       <div class='header'>
@@ -62,6 +64,8 @@ export function Header() {
                   </Link>
                   <Link to='/personalAccount'>
                     <img src={personal} alt='' />
+                    <p>{items.length}</p>
+                    <p>{totaPrise}</p>
                   </Link>
                 </div>
               </div>

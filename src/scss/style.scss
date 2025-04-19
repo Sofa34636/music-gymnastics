@@ -9,13 +9,16 @@
 }
 
 .Button {
+  border-radius: 14px;
+  width: 340px;
+  color: #ffffff;
+  padding: 10px;
+  border: none;
   &__red {
     background-color: #ff546b;
-    border-radius: 14px;
-    width: 340px;
-    color: #ffffff;
-    padding: 10px;
-    border: none;
+  }
+  &__blue {
+    background-color: #1a016c;
   }
 }
 
@@ -335,4 +338,50 @@ input[type='number']::-webkit-inner-spin-button {
   box-shadow: none;
   cursor: pointer;
   top: -8px;
+}
+
+.cart {
+  &__title {
+    padding-top: 50px;
+    padding-bottom: 67px;
+  }
+  &__inner {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__total {
+    &-bloc {
+      background-color: #eeeeee;
+      border-radius: 30px;
+      width: 470px;
+      padding: 36px;
+      text-align: center;
+      margin: 0 auto;
+    }
+    &-title {
+      padding-bottom: 40px;
+    }
+  }
+  &__item {
+    position: relative;
+    padding-top: 30px;
+    padding-bottom: 36px;
+    &-link {
+      display: flex;
+      justify-content: space-between;
+    }
+    &-active {
+      &::after {
+        content: '';
+        height: 2px;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        border-radius: 1px;
+        background-color: rgba(0, 0, 0, 0.268);
+        position: absolute;
+        width: 100%;
+      }
+    }
+  }
 }
