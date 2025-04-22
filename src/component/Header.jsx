@@ -10,7 +10,7 @@ import { useSelector } from 'react-redux';
 
 export function Header() {
   const { loginAsUser, loginAsAdmin, logout, auth } = useAuth();
-  const { items, totaPrise } = useSelector((state) => state.cart);
+  const { items, totalPrice } = useSelector((state) => state.cart);
   return (
     <header>
       <div class='header'>
@@ -65,7 +65,7 @@ export function Header() {
                   <Link to='/personalAccount'>
                     <img src={personal} alt='' />
                     <p>{items.length}</p>
-                    <p>{totaPrise}</p>
+                    <p>{totalPrice}</p>
                   </Link>
                 </div>
               </div>

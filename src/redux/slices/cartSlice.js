@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
-  totaPrise: 0,
+  totalPrice: 0,
   items: [],
 };
 
@@ -12,7 +12,7 @@ const cartSlice = createSlice({
     addProduct(state, action) {
       // добавляем
       state.items.push(action.payload);
-      state.totaPrise = state.items.reduce((sum, obj) => {
+      state.totalPrice = state.items.reduce((sum, obj) => {
         // сумируем предедущиый результат с новым
         return sum + obj.Price; // из полученных данного массива из Tracks берем Price
       }, 0);
@@ -24,6 +24,7 @@ const cartSlice = createSlice({
     clearItem(state) {
       // все очищаем
       state.items = [];
+      state.totalPrice = 0;
     },
   },
 });
