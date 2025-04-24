@@ -11,7 +11,7 @@ import {
   setMaxPrice,
   updateFromTracks,
   setFilters, // Добавляем для сброса
-} from '../../redux/slices/filterSlice';
+} from '../../../redux/slices/filterSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Компонент Filters отвечает за отображение и управление фильтрами для треков

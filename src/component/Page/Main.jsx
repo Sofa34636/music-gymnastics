@@ -1,17 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux'; // Добавляем Redux хуки
 import { resetFilters, setFilters } from '../../redux/slices/filterSlice'; // Импортируем действие для фильтров
-import { Tracks } from '../Main/Tracks';
-import { Albums } from '../Main/Albums';
-import { Filters } from '../Main/Filters';
-import { Search } from '../Main/Search';
+import { Tracks } from '../Layout/Main/Tracks';
+import { Albums } from '../Layout/Main/Albums';
+import { Filters } from '../Layout/Main/Filters';
+import { Search } from '../Layout/Main/Search';
 import { setAlbumId } from '../../redux/slices/albumSlice';
-import { setTracks } from '../../redux/slices/trackSlice';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
 import qs from 'qs';
+import { fetchTrack } from '../../redux/slices/requestTrackSlice';
+import { setSearchValue } from '../../redux/slices/searchValue';
 
-// Больше не нужны локальные defaultFilters, они в сторе
 export function Main() {
   const navigate = useNavigate();
   const isSearch = useRef(false);
@@ -20,106 +20,46 @@ export function Main() {
   const dispatch = useDispatch(); // dispatch - функция, которая меняет стейт
   const filters = useSelector((state) => state.filters); // Получаем фильтры из стора
   const { albums, albumId } = useSelector((state) => state.albums);
-  const tracks = useSelector((state) => state.tracks.tracks || []);
+  const { tracks, status } = useSelector((state) => state.requestTrack);
+  const searchValue = useSelector((state) => state.search.searchValue);
 
   const onChangeAlbum = (id) => {
     dispatch(setAlbumId(id)); //меняем категорью на новую, которая к нам придет
     dispatch(resetFilters()); // обнуление
   };
 
-  // const [tracks, setTracks] = React.useState([]);
-  const [searchValue, setSearchValue] = React.useState('');
-
-  // Обработка загруженных треков
-  const handleTracksLoad = (arr, currentAlbumId) => {
-    const validTracks = Array.isArray(arr) ? arr : [];
-    console.log('Треки для альбома', currentAlbumId, ':', validTracks);
-    dispatch(setTracks(validTracks)); // Диспатчим треки в Redux
-    const minPrice =
-      validTracks.length > 0 ? Math.min(...validTracks.map((t) => parseInt(t.Price))) : 0;
-    const maxPrice =
-      validTracks.length > 0 ? Math.max(...validTracks.map((t) => parseInt(t.Price))) : 1000;
-    // Обновляем фильтры через Redux
-    dispatch(
-      setFilters({
-        ...filters,
-        priceRange: [minPrice, maxPrice],
-      }),
-    );
-  };
-
-  const fatchTracks = () => {
-    console.log('Текущий albumId:', albumId);
-    const url =
-      albumId === 0
-        ? 'https://66fbc16c8583ac93b40d1654.mockapi.io/tracks'
-        : `https://66fbc16c8583ac93b40d1654.mockapi.io/tracks?Albums=${albumId}`;
-
-    axios
-      .get(url)
-      .then((res) => handleTracksLoad(res.data, albumId))
-      .catch((error) => {
-        console.error('Ошибка при загрузке треков:', error.message, error.response);
-        dispatch(setTracks([]));
-        dispatch(
-          setFilters({
-            priceRange: [0, 1000],
-            genres: [],
-            tempos: [],
-            voices: [],
-            durations: [],
-            languages: [],
-          }),
-        );
-      });
+  const getTracks = async () => {
+    dispatch(fetchTrack({ albumId })); // делаем запрос на бэк и сохраняем пицы
+    // dispatch(setFilters({ ...filters, priceRange: [0, 1000] }));
   };
 
   // если был первый рендер, то проверяем URL - параметры и сохраняем в редакс
   useEffect(() => {
-    if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
-      console.log('Параметры из URL:', params);
-      const parseParam = (value, fallback) => {
-        if (!value) return fallback;
-        try {
-          return JSON.parse(value);
-        } catch (error) {
-          console.error(`Ошибка парсинга параметра: ${value}`, error);
-          return fallback;
-        }
-      };
-      const newFilters = {
+    const params = qs.parse(window.location.search.substring(1));
+    const parseParam = (value, fallback) => {
+      try {
+        return value ? JSON.parse(value) : fallback;
+      } catch {
+        return fallback;
+      }
+    };
+    dispatch(
+      setFilters({
         priceRange: parseParam(params.priceRange, filters.priceRange),
         genres: parseParam(params.genres, filters.genres),
         tempos: parseParam(params.tempos, filters.tempos),
         voices: parseParam(params.voices, filters.voices),
         durations: parseParam(params.durations, filters.durations),
         languages: parseParam(params.languages, filters.languages),
-      };
-      // Диспатчим только если параметры действительно отличаются
-      if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
-        dispatch(setFilters(newFilters));
-      }
-      if (params.albumId && Number(params.albumId) !== albumId) {
-        dispatch(setAlbumId(Number(params.albumId)));
-      }
-      isSearch.current = true; // проверяем были ли изменения
-    }
+      }),
+    );
+    if (params.albumId) dispatch(setAlbumId(Number(params.albumId)));
   }, [dispatch]);
 
   useEffect(() => {
     if (isMounted.current) {
       // если был первый рендер вшиваем в адресную строку
-      const queryString = qs.stringify({
-        albumId,
-        priceRange: JSON.stringify(filters.priceRange),
-        genres: JSON.stringify(filters.genres),
-        tempos: JSON.stringify(filters.tempos),
-        voices: JSON.stringify(filters.voices),
-        durations: JSON.stringify(filters.durations),
-        languages: JSON.stringify(filters.languages),
-      });
-
+      const queryString = qs.stringify({ albumId, ...filters });
       navigate(`?${queryString}`);
     }
     isMounted.current = true;
@@ -128,34 +68,22 @@ export function Main() {
   useEffect(() => {
     // Если был первы рендер, то запрашиваем треки
     window.scrollTo(0, 0);
-
-    fatchTracks();
-
+    getTracks();
     isSearch.current = true;
   }, [albumId]);
 
   const filteredTracks = React.useMemo(() => {
     let result = tracks.filter((track) => {
       const price = parseInt(track.Price);
-      const searchMatch = searchValue
-        ? track.TrackNumber.toLowerCase().includes(searchValue.toLowerCase())
-        : true;
-      const priceMatch = price >= filters.priceRange[0] && price <= filters.priceRange[1];
-      const genreMatch = filters.genres.length === 0 || filters.genres.includes(track.Genre);
-      const tempoMatch = filters.tempos.length === 0 || filters.tempos.includes(track.Tempo);
-      const voiceMatch = filters.voices.length === 0 || filters.voices.includes(track.Voice);
-      const durationMatch =
-        filters.durations.length === 0 || filters.durations.includes(track.Duration);
-      const languageMatch =
-        filters.languages.length === 0 || filters.languages.includes(track.Language);
       return (
-        searchMatch &&
-        priceMatch &&
-        genreMatch &&
-        tempoMatch &&
-        voiceMatch &&
-        durationMatch &&
-        languageMatch
+        (!searchValue || track.TrackNumber.toLowerCase().includes(searchValue.toLowerCase())) &&
+        price >= filters.priceRange[0] &&
+        price <= filters.priceRange[1] &&
+        (!filters.genres.length || filters.genres.includes(track.Genre)) &&
+        (!filters.tempos.length || filters.tempos.includes(track.Tempo)) &&
+        (!filters.voices.length || filters.voices.includes(track.Voice)) &&
+        (!filters.durations.length || filters.durations.includes(track.Duration)) &&
+        (!filters.languages.length || filters.languages.includes(track.Language))
       );
     });
 
@@ -167,7 +95,6 @@ export function Main() {
       result = result.slice(0, quantity);
     }
 
-    console.log('Отфильтрованные треки:', result);
     return result;
   }, [tracks, filters, albumId, searchValue]); // filters из стора
 
@@ -183,9 +110,17 @@ export function Main() {
     <main>
       <div className='container'>
         <Albums value={albumId} onChangeAlbom={onChangeAlbum} albums={albums} />
-        <Search searchValue={searchValue} setSearchValue={setSearchValue} />
+        <Search />
         <div className='main__column'>
-          <div className='main__inner'>{trackFilter}</div>
+          {status === 'error' ? (
+            <h2>Треки отсутствуют</h2>
+          ) : (
+            <div className='main__inner'>
+              {
+                status === 'loading' ? 'загрузка треков' : trackFilter // через слайс делаем проверку при загрузке надпись, если все хорошо выводим треки
+              }
+            </div>
+          )}
           <Filters tracks={tracks} />
         </div>
       </div>

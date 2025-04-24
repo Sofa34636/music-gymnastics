@@ -1,4 +1,4 @@
-import { AudioPlayer } from '../AudioPlayer';
+import { AudioPlayer } from '../Main/AudioPlayer';
 import audio from '../../../assets/audio.mp3';
 import React, { useState } from 'react';
 import clear from '../../../Images/icon/clear.png';

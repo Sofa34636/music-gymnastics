@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import blackCart from '../../Images/icon/black cart.svg';
-import activeCart from '../../Images/icon/activeCart.png';
-import Import from '../../Images/icon/import.svg';
-import sound from '../../Images/icon/sound.svg';
-import pause from '../../Images/icon/pause.svg';
-import play from '../../Images/icon/play.svg';
+import blackCart from '../../../Images/icon/black cart.svg';
+import activeCart from '../../../Images/icon/activeCart.png';
+import Import from '../../../Images/icon/import.svg';
+import sound from '../../../Images/icon/sound.svg';
+import pause from '../../../Images/icon/pause.svg';
+import play from '../../../Images/icon/play.svg';
 import { AudioPlayer } from './AudioPlayer';
 import { Filters } from './Filters';
-import audio from '../../assets/audio.mp3';
+import audio from '../../../assets/audio.mp3';
 import { useDispatch, useSelector } from 'react-redux';
-import { addProduct } from '../../redux/slices/cartSlice';
+import { addProduct } from '../../../redux/slices/cartSlice';
 
 export function Tracks({ id, TrackNumber, Price, Duration }) {
   const dispatch = useDispatch();

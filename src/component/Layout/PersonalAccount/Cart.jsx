@@ -1,62 +1,27 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CartTracks } from './CartTracks';
-import { clearItem } from '../../../redux/slices/cartSlice';
+import { clearItem, selectAllTracks, toggleTrackSelection } from '../../../redux/slices/cartSlice';
 
 export function Cart() {
   const dispatch = useDispatch();
-  const { items } = useSelector((state) => state.cart);
+  const { items, selectedTracks, selectAll, totalPrice } = useSelector((state) => state.cart);
 
   const sliderRef = useRef(null);
 
-  const [selectedTracks, setSelectedTracks] = useState([]);
-  const [selectAll, setSelectAll] = useState(false);
-
-  const totalPrice = selectedTracks.reduce((sum, trackId) => {
-    const track = items.find((item) => item.id === trackId);
-    return sum + (track?.Price || 0);
-  }, 0);
-
   const handleSelectAll = (e) => {
     e.stopPropagation();
-    if (!selectAll) {
-      const allTrackIds = items.map((item) => item.id);
-      setSelectedTracks(allTrackIds);
-      setSelectAll(true);
-    } else {
-      setSelectedTracks([]);
-      setSelectAll(false);
-    }
+    dispatch(selectAllTracks(!selectAll)); // Отправляем true/false для выбора/снятия всех треков
   };
 
   const handleTrackSelect = (trackId) => (e) => {
     e.stopPropagation();
-    if (selectedTracks.includes(trackId)) {
-      setSelectedTracks(selectedTracks.filter((id) => id !== trackId));
-    } else {
-      setSelectedTracks([...selectedTracks, trackId]);
-    }
+    dispatch(toggleTrackSelection(trackId)); // Отправляем ID трека для переключения
   };
-
-  useEffect(() => {
-    if (items.length > 0 && selectedTracks.length === items.length) {
-      setSelectAll(true);
-    } else {
-      setSelectAll(false);
-    }
-  }, [selectedTracks, items]);
-
-  useEffect(() => {
-    setSelectedTracks((prev) =>
-      prev.filter((trackId) => items.some((item) => item.id === trackId)),
-    );
-  }, [items]);
 
   const onClickClear = () => {
     if (window.confirm('Очистить корзину?')) {
       dispatch(clearItem());
-      setSelectedTracks([]);
-      setSelectAll(false);
     }
   };
 

@@ -6,13 +6,13 @@ import { AdminPanel } from './component/Page/AdminPanel';
 import { Main } from './component/Page/Main';
 import { RequireAuth } from './component/Authorization/RequireAuth';
 import { Missing404 } from './component/Page/Missing404';
-import { PersonalAccount } from './component/Main/PersonalAccount/PersonalAccount';
+import { PersonalAccount } from './component/Layout/PersonalAccount/PersonalAccount';
 import { Layout } from './component/Page/Layout';
 import { AddTrack } from './component/AdminPanel/AddTrack/AddTrack';
 import { TrackManagement } from './component/AdminPanel/TrackManagement/TrackManagement';
 
 import { AuthProvider } from './context/AuthProvider';
-import { Cart } from './component/Main/PersonalAccount/Cart';
+import { Cart } from './component/Layout/PersonalAccount/Cart';
 
 const ROLES = {
   User: 2001,

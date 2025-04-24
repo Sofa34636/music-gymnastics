@@ -1,6 +1,6 @@
 import React from 'react';
-import music from '../../Images/icon/music.svg';
-import albumImg from '../../Images/Album.svg'; // Переименовал для ясности
+import music from '../../../Images/icon/music.svg';
+import albumImg from '../../../Images/Album.svg'; // Переименовал для ясности
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
 import 'swiper/css';

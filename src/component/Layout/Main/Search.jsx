@@ -1,15 +1,18 @@
 import React, { useCallback, useRef, useState } from 'react';
-import search from '../../Images/icon/search.svg';
-import clear from '../../Images/icon/clear.png';
+import search from '../../../Images/icon/search.svg';
+import clear from '../../../Images/icon/clear.png';
 import debounce from 'lodash.debounce';
+import { useDispatch } from 'react-redux';
+import { setSearchValue } from '../../../redux/slices/searchValue';
 
-export function Search({ searchValue, setSearchValue }) {
+export function Search() {
+  const dispatch = useDispatch();
   const [value, setValue] = useState();
   const inputRef = useRef();
 
   const onClickClear = () => {
     // полная очистка
-    setSearchValue('');
+    dispatch(setSearchValue(''));
     setValue('');
     inputRef.current.focus(); // что бы при нажатии на крестик курсор опять вставал в поле поиска
   };
@@ -18,7 +21,7 @@ export function Search({ searchValue, setSearchValue }) {
     // отложенная функция
     debounce((str) => {
       // делаем задержку в отправлении запроса на бэк, после ввода в поиск
-      setSearchValue(str);
+      dispatch(setSearchValue(str));
     }, 300),
   );
 

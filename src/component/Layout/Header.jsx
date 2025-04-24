@@ -1,11 +1,11 @@
 import React from 'react';
-import LogoText from '../Images/icon/LogoText.svg';
-import logo from '../Images/icon/logo.svg';
-import personal from '../Images/icon/personal.svg';
-import cart from '../Images/icon/cart.svg';
-import translate from '../Images/icon/translate.svg';
+import LogoText from '../../Images/icon/LogoText.svg';
+import logo from '../../Images/icon/logo.svg';
+import personal from '../../Images/icon/personal.svg';
+import cart from '../../Images/icon/cart.svg';
+import translate from '../../Images/icon/translate.svg';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../../hooks/useAuth';
 import { useSelector } from 'react-redux';
 
 export function Header() {
