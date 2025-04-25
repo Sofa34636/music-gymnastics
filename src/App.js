@@ -13,6 +13,8 @@ import { TrackManagement } from './component/AdminPanel/TrackManagement/TrackMan
 
 import { AuthProvider } from './context/AuthProvider';
 import { Cart } from './component/Layout/PersonalAccount/Cart';
+import { FullAlbum } from './component/Layout/Main/FullAlbum';
+import { FullTrack } from './component/Layout/Main/FullTrack';
 
 const ROLES = {
   User: 2001,
@@ -27,6 +29,8 @@ function App() {
           {/* public routes */}
           <Route path='/' element={<Layout />}>
             <Route index element={<Main />} />
+            <Route path='/album/:id' element={<FullAlbum />} />
+            <Route path='/track/:id' element={<FullTrack />} />
             <Route path='login' element={<Login />} />
             <Route path='register' element={<Register />} />
 

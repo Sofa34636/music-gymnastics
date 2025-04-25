@@ -499,3 +499,24 @@ input[type='number']::-webkit-inner-spin-button {
   display: block;
   padding-left: 40px;
 }
+
+.fullAlbum {
+  &__inner {
+    display: flex;
+    gap: 100px;
+    margin-top: 81px;
+  }
+  &__bloc {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 30px;
+  }
+  &__item {
+    display: flex;
+    justify-content: space-between;
+  }
+  &__text {
+    width: 860px;
+  }
+}

@@ -7,10 +7,9 @@ import { Filters } from '../Layout/Main/Filters';
 import { Search } from '../Layout/Main/Search';
 import { setAlbumId } from '../../redux/slices/albumSlice';
 
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import qs from 'qs';
 import { fetchTrack } from '../../redux/slices/requestTrackSlice';
-import { setSearchValue } from '../../redux/slices/searchValue';
 
 export function Main() {
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ export function Main() {
   };
 
   const getTracks = async () => {
-    dispatch(fetchTrack({ albumId })); // делаем запрос на бэк и сохраняем пицы
+    dispatch(fetchTrack({ albumId })); // делаем запрос на бэк и сохраняем треки
     // dispatch(setFilters({ ...filters, priceRange: [0, 1000] }));
   };
 
@@ -100,7 +99,15 @@ export function Main() {
 
   const trackFilter = React.useMemo(() => {
     return filteredTracks.length > 0 ? (
-      filteredTracks.map((obj) => <Tracks key={obj.id} {...obj} />)
+      filteredTracks.map((obj) => (
+        <Link
+          to={`/track/${obj.id}`} // :${obj.id} для меняющехся треков
+          key={obj.id}
+        >
+          {' '}
+          <Tracks {...obj} />
+        </Link>
+      ))
     ) : (
       <p>Треки не найдены</p>
     );

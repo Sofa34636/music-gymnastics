@@ -1,16 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-export const fetchTrack = createAsyncThunk(
-  'track/fetchTrackStatus',
-  async ({ albumId, thunkApi }) => {
-    const url = `https://66fbc16c8583ac93b40d1654.mockapi.io/tracks${
-      albumId === 0 ? '' : `?Albums=${albumId}`
-    }`;
-    const { data } = await axios.get(url);
-    return data;
-  },
-);
+export const fetchTrack = createAsyncThunk('track/fetchTrackStatus', async ({ albumId }) => {
+  const url = `https://66fbc16c8583ac93b40d1654.mockapi.io/tracks${
+    albumId === 0 ? '' : `?Albums=${albumId}`
+  }`;
+  const { data } = await axios.get(url);
+  return data;
+});
 
 const initialState = {
   tracks: [],
