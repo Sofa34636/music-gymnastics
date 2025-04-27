@@ -520,3 +520,39 @@ input[type='number']::-webkit-inner-spin-button {
     width: 860px;
   }
 }
+.trackFull__width {
+  width: 572px;
+}
+.fullTrack {
+  &__inner {
+    margin-top: 81px;
+  }
+  &__titel {
+    display: flex;
+    gap: 421px;
+    padding-bottom: 12px;
+  }
+  &__item {
+    display: flex;
+    gap: 100px;
+    align-items: center;
+  }
+  &__item-blok {
+    display: flex;
+    flex-direction: column;
+
+    padding-bottom: 46px;
+  }
+  &__flex {
+    display: flex;
+    justify-content: space-between;
+    width: 572px;
+  }
+  &__color {
+    padding: 7px 12px;
+    border-radius: 10px;
+  }
+  &__brown {
+    background-color: #eeeeee;
+  }
+}
